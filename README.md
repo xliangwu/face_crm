@@ -1,6 +1,6 @@
 Face recognition GUI
 =======================================
-#introduction
+#introduction#
 
-#Contract
+#Contract#
 email:wuxueliang4596@163.com
