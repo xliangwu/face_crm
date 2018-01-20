@@ -1,60 +1,71 @@
 import wx
 import sys
+import wx.lib.scrolledpanel as scrolled
 from face.config.UIConfig import configConst
-
+from face.component.CameraPanel import CameraPanel
+from face.component.FaceRecognizePanel import FaceRecognizePanel
 import wx
+
 
 class FaceManagerFrame(wx.Frame):
     def __init__(self, *args, **kw):
         # ensure the parent's __init__ is called
         super(FaceManagerFrame, self).__init__(*args, **kw)
 
-        # create a panel in the frame
-        pnl = wx.Panel(self)
-
-        # and put some text with a larger bold font on it
-        st = wx.StaticText(pnl, label="Hello World!", pos=(25, 25))
-        font = st.GetFont()
-        font.PointSize += 10
-        font = font.Bold()
-        st.SetFont(font)
+        # create panels in the frame
+        self.createPanels()
 
         # create a menu bar
         self.makeMenuBar()
 
         # and a status bar
         self.CreateStatusBar()
-        self.SetStatusText("欢迎使用管理系统!")
+        self.SetStatusText(configConst.SYSTEM_WELCOME_INFO)
+
+    def createPanels(self):
+        scrolledPanel = scrolled.ScrolledPanel(self, size=(425, 400))
+
+        cameraPanelOne = CameraPanel(scrolledPanel, -1)
+        cameraPanelTwo = CameraPanel(scrolledPanel, -1)
+
+        faceRecognizePanelOne = FaceRecognizePanel(scrolledPanel, -1)
+        faceRecognizePanelTwo = FaceRecognizePanel(scrolledPanel, -1)
+
+        outBoxSize = wx.BoxSizer(wx.VERTICAL)
+        boxSize0 = wx.BoxSizer(wx.HORIZONTAL)
+        boxSize1 = wx.BoxSizer(wx.HORIZONTAL)
+
+        boxSize0.Add(cameraPanelOne, proportion=1, flag=wx.EXPAND | wx.ALL, border=2)
+        boxSize0.Add(faceRecognizePanelOne, proportion=0, flag=wx.ALL, border=2)
+        boxSize1.Add(cameraPanelTwo, proportion=1, flag=wx.EXPAND | wx.ALL, border=2)
+        boxSize1.Add(faceRecognizePanelTwo, proportion=0, flag=wx.ALL, border=2)
+        outBoxSize.Add(boxSize0, proportion=0, flag=wx.EXPAND | wx.ALL, border=2)
+        outBoxSize.Add(boxSize1, proportion=0, flag=wx.EXPAND | wx.ALL, border=2)
+
+        scrolledPanel.SetSizer(outBoxSize)
+        scrolledPanel.Layout()
+        scrolledPanel.SetupScrolling(scroll_x=False)
+
+        mainSizer = wx.BoxSizer(wx.VERTICAL)
+        mainSizer.Add(scrolledPanel, proportion=1, flag=wx.EXPAND)
+        self.SetSizer(mainSizer)
+        self.Fit()
 
     def makeMenuBar(self):
-        """
-        A menu bar is composed of menus, which are composed of menu items.
-        This method builds a set of menus and binds handlers to be called
-        when the menu item is selected.
-        """
+        memberMenu = wx.Menu()
+        editItem = memberMenu.Append(-1, configConst.MENU_MEMBER_EDIT)
+        memberMenu.AppendSeparator()
+        exitItem = memberMenu.Append(wx.ID_EXIT, configConst.MENU_MEMBER_QUIT)
 
-        # Make a file menu with Hello and Exit items
-        fileMenu = wx.Menu()
-        # The "\t..." syntax defines an accelerator key that also triggers
-        # the same event
-        helloItem = fileMenu.Append(-1, "&Hello...\tCtrl-H",
-                                    "Help string shown in status bar for this menu item")
-        fileMenu.AppendSeparator()
-        # When using a stock ID we don't need to specify the menu item's
-        # label
-        exitItem = fileMenu.Append(wx.ID_EXIT)
+        viewMenu = wx.Menu()
 
-        # Now a help menu for the about item
         helpMenu = wx.Menu()
-        aboutItem = helpMenu.Append(wx.ID_ABOUT)
+        aboutItem = helpMenu.Append(wx.ID_ABOUT, configConst.MENU_HELP_ABOUT)
 
-        # Make the menu bar and add the two menus to it. The '&' defines
-        # that the next letter is the "mnemonic" for the menu item. On the
-        # platforms that support it those letters are underlined and can be
-        # triggered from the keyboard.
         menuBar = wx.MenuBar()
-        menuBar.Append(fileMenu, "&File")
-        menuBar.Append(helpMenu, "&Help")
+        menuBar.Append(memberMenu, configConst.MENU_MEMBER)
+        menuBar.Append(viewMenu, configConst.MENU_VIEW)
+        menuBar.Append(helpMenu, configConst.MENU_HELP)
 
         # Give the menu bar to the frame
         self.SetMenuBar(menuBar)
@@ -62,22 +73,18 @@ class FaceManagerFrame(wx.Frame):
         # Finally, associate a handler function with the EVT_MENU event for
         # each of the menu items. That means that when that menu item is
         # activated then the associated handler function will be called.
-        self.Bind(wx.EVT_MENU, self.OnHello, helloItem)
-        self.Bind(wx.EVT_MENU, self.OnExit, exitItem)
-        self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
+        self.Bind(wx.EVT_MENU, self.onEdit, editItem)
+        self.Bind(wx.EVT_MENU, self.onExit, exitItem)
+        self.Bind(wx.EVT_MENU, self.onAbout, aboutItem)
 
-    def OnExit(self, event):
-        """Close the frame, terminating the application."""
+    def onExit(self, event):
         self.Close(True)
 
-    def OnHello(self, event):
-        """Say hello to the user."""
+    def onEdit(self, event):
         wx.MessageBox("Hello again from wxPython")
 
-    def OnAbout(self, event):
-        """Display an About Dialog"""
-        wx.MessageBox("This is a wxPython Hello World sample",
-                      "About Hello World 2",
+    def onAbout(self, event):
+        wx.MessageBox(configConst.MENU_HELP_ABOUT_INFO, configConst.MENU_HELP_ABOUT_TITLE,
                       wx.OK | wx.ICON_INFORMATION)
 
 
