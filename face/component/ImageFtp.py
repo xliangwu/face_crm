@@ -37,5 +37,5 @@ class ImageUpload:
 
 
 if __name__ == '__main__':
-    imageUpload = ImageUpload('192.168.1.200', 'faceos', 'faceos', '/home/caveup0/')
+    imageUpload = ImageUpload('192.168.1.200', 'faceos', 'faceos', '/home/faceos/Embedded/debug/Image')
     imageUpload.upload(r'C:\Users\xw80329\Desktop\data\test.jpg')

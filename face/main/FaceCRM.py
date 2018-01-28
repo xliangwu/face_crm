@@ -1,9 +1,11 @@
 import wx
 import sys
 import wx.lib.scrolledpanel as scrolled
+from wx.lib.pubsub import pub
 from face.config.UIConfig import configConst
 from face.component.CameraPanel import CameraPanel
 from face.component.FaceRecognizePanel import FaceRecognizePanel
+from face.component.FaceSocketServerThread import FaceSocketServerThread
 import wx
 
 
@@ -11,7 +13,7 @@ class FaceManagerFrame(wx.Frame):
     def __init__(self, *args, **kw):
         # ensure the parent's __init__ is called
         super(FaceManagerFrame, self).__init__(*args, **kw)
-
+        self.facePanels = []
         # create panels in the frame
         self.createPanels()
 
@@ -21,6 +23,15 @@ class FaceManagerFrame(wx.Frame):
         # and a status bar
         self.CreateStatusBar()
         self.SetStatusText(configConst.SYSTEM_WELCOME_INFO)
+
+        pub.subscribe(self.refreshFaceImage, 'face.refresh')
+
+        # start backend threads
+        FaceSocketServerThread('127.0.0.1', 3000)
+
+    def refreshFaceImage(self, index, blackData, realData, time=None):
+        print('Will refresh face image :[%s]' % index)
+        self.facePanels[int(index)].refreshImage(blackData, realData)
 
     def createPanels(self):
         scrolledPanel = scrolled.ScrolledPanel(self, size=(425, 400))
@@ -41,10 +52,12 @@ class FaceManagerFrame(wx.Frame):
         boxSize1.Add(faceRecognizePanelTwo, proportion=0, flag=wx.ALL, border=2)
         outBoxSize.Add(boxSize0, proportion=0, flag=wx.EXPAND | wx.ALL, border=2)
         outBoxSize.Add(boxSize1, proportion=0, flag=wx.EXPAND | wx.ALL, border=2)
+        self.facePanels.append(faceRecognizePanelOne)
+        self.facePanels.append(faceRecognizePanelTwo)
 
         scrolledPanel.SetSizer(outBoxSize)
         scrolledPanel.Layout()
-        scrolledPanel.SetupScrolling(scroll_x=False)
+        scrolledPanel.SetupScrolling(scroll_x=True)
 
         mainSizer = wx.BoxSizer(wx.VERTICAL)
         mainSizer.Add(scrolledPanel, proportion=1, flag=wx.EXPAND)
