@@ -15,7 +15,7 @@ class CameraPanel(wx.Panel):
 
         cameraPanel = wx.Panel(self, -1)
         rstpUrl = 'rtsp://admin:admin2014@192.168.1.7:554/h264/ch1/sub/av_stream'
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(rstpUrl)
         capturePanel = CapturePanel(cameraPanel, cap)
 
         verticalBox.Add(tips, proportion=0, flag=wx.EXPAND | wx.ALL, border=5)

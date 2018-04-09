@@ -27,7 +27,7 @@ class FaceManagerFrame(wx.Frame):
         pub.subscribe(self.refreshFaceImage, 'face.refresh')
 
         # start backend threads
-        FaceSocketServerThread('127.0.0.1', 3000)
+        FaceSocketServerThread('192.168.1.130', 6789)
 
     def refreshFaceImage(self, index, blackData, realData, time=None):
         print('Will refresh face image :[%s]' % index)

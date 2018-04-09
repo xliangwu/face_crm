@@ -25,3 +25,8 @@ configConst.MENU_HELP_ABOUT_TITLE = "关于我们"
 configConst.MENU_HELP_ABOUT_INFO = """
 门禁管理系统
 """
+
+# canmeral
+# capture input is 1280*720 640/360
+configConst.CAPTURE_WIDTH = 640
+configConst.CAPTURE_HEIGHT = 360
